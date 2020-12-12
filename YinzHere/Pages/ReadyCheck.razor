@@ -1,0 +1,67 @@
+﻿@page "/readycheck/{key?}"
+@using YinzHere.Models 
+@using Services
+@inject NavigationManager NavigationManager
+@inject IReadyCheckService ReadyCheckService
+
+<h3>ReadyCheck</h3>
+@if (Key != null)
+{
+    <input type="text" placeholder="Enter your name here" @bind="nameToAdd"/>
+    <button class="btn btn-primary" @onclick="AddName">Add your name</button>
+    <button class="btn" @onclick="Refresh">Refresh</button>
+
+    <h4>Users Ready:</h4>
+    <ul>
+        @foreach(var user in CurrentReadyCheck.UsersReady)
+        {
+            <li>@user</li>
+        }
+    </ul>
+}
+else
+{
+    <button class="btn btn-primary" @onclick="NewReadyCheck">Ready-Check</button>
+}
+
+@code {
+    [ParameterAttribute]
+    public string Key { get; set; }
+    private string nameToAdd { get; set; }
+    private Models.ReadyCheck CurrentReadyCheck { get; set; }
+
+    public void Dispose()
+    {
+        if(this.CurrentReadyCheck == null)
+        {
+            this.CurrentReadyCheck.OnChange -= StateHasChanged;
+        }
+    }
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        this.CurrentReadyCheck = ReadyCheckService.GetReadyCheck(this.Key);
+        if(CurrentReadyCheck != null)
+        {
+            this.CurrentReadyCheck.OnChange += Foo;
+        }
+    }
+    private void Foo()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+    private void AddName()
+    {
+        this.CurrentReadyCheck.AddUser(nameToAdd);
+        this.nameToAdd = null;
+    }
+    private void NewReadyCheck()
+    {
+        var key = ReadyCheckService.NewReadyCheck();
+        NavigationManager.NavigateTo($"/readycheck/{key}");
+    }
+    private void Refresh()
+    {
+        this.StateHasChanged();
+    }
+}
