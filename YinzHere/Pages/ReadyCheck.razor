@@ -3,13 +3,14 @@
 @using Services
 @inject NavigationManager NavigationManager
 @inject IReadyCheckService ReadyCheckService
+@inject IJSRuntime JSRuntime
 
 <h3>ReadyCheck</h3>
 @if (Key != null)
 {
     <input type="text" placeholder="Enter your name here" @bind="nameToAdd"/>
     <button class="btn btn-primary" @onclick="AddName">Add your name</button>
-    <button class="btn" @onclick="Refresh">Refresh</button>
+    <button class="btn btn-secondary" @onclick="CopyUrl">Click to copy URL</button>
 
     <h4>Users Ready:</h4>
     <ul>
@@ -60,8 +61,8 @@ else
         var key = ReadyCheckService.NewReadyCheck();
         NavigationManager.NavigateTo($"/readycheck/{key}");
     }
-    private void Refresh()
+    private void CopyUrl()
     {
-        this.StateHasChanged();
+
     }
 }

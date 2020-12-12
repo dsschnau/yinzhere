@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using YinzHere.Data;
 using YinzHere.Services;
 
 namespace YinzHere
@@ -29,7 +28,6 @@ namespace YinzHere
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            services.AddSingleton<WeatherForecastService>();
             services.AddSingleton<IReadyCheckService, ReadyCheckService>();
         }
 
