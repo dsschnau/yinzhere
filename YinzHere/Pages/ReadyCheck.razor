@@ -1,4 +1,5 @@
-﻿@page "/readycheck/{key?}"
+﻿@inherits ReadyCheckBase
+@page "/readycheck/{key?}"
 @using YinzHere.Models
 @using Services
 @inject NavigationManager NavigationManager
@@ -30,54 +31,4 @@ else
         }
     </ul>
 
-}
-
-@code {
-    [ParameterAttribute]
-    public string Key { get; set; }
-    private string nameToAdd { get; set; }
-    private Models.ReadyCheck CurrentReadyCheck { get; set; }
-
-    public void Dispose()
-    {
-        if (this.CurrentReadyCheck == null)
-        {
-            this.CurrentReadyCheck.OnChange -= StateHasChanged;
-        }
-    }
-    protected override async Task OnParametersSetAsync()
-    {
-        base.OnParametersSet();
-        this.CurrentReadyCheck = ReadyCheckService.GetReadyCheck(this.Key);
-        if (CurrentReadyCheck == null)
-        {
-            if (!string.IsNullOrWhiteSpace(this.Key))
-            {
-                this.Key = null;
-                NavigationManager.NavigateTo("/", true);
-            }
-        }
-        else
-        {
-            this.CurrentReadyCheck.OnChange += StateHasChangedAsync;
-        }
-    }
-    private void StateHasChangedAsync()
-    {
-        InvokeAsync(StateHasChanged);
-    }
-    private void AddName()
-    {
-        this.CurrentReadyCheck.AddUser(nameToAdd);
-        this.nameToAdd = null;
-    }
-    private void NewReadyCheck()
-    {
-        var key = ReadyCheckService.NewReadyCheck();
-        NavigationManager.NavigateTo($"/readycheck/{key}");
-    }
-    private void CopyUrl()
-    {
-        ClipboardService.WriteTextAsync(NavigationManager.Uri);
-    }
 }
