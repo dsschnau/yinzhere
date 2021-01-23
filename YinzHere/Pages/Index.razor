@@ -1,13 +1,17 @@
 ﻿@page "/"
-@inject NavigationManager NavigationManager 
+@inject NavigationManager NavigationManager
 
 <h1>Yinz Here?</h1>
 
-<button class="btn btn-primary" @onclick="ReadyCheck">Start a new Ready-Check</button>
-
-@code {
-    private void ReadyCheck()
+@code { 
+    protected override void OnInitialized()
     {
+        base.OnInitialized();
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
         NavigationManager.NavigateTo("readycheck");
     }
 }

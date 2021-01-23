@@ -1,28 +1,35 @@
 ﻿@page "/readycheck/{key?}"
-@using YinzHere.Models 
+@using YinzHere.Models
 @using Services
 @inject NavigationManager NavigationManager
 @inject IReadyCheckService ReadyCheckService
 @inject IJSRuntime JSRuntime
+@inject ClipboardService ClipboardService
 
-<h3>ReadyCheck</h3>
+<h1>Yinz Here?</h1>
 @if (Key != null)
 {
-    <input type="text" placeholder="Enter your name here" @bind="nameToAdd"/>
-    <button class="btn btn-primary" @onclick="AddName">Add your name</button>
+    <span>Room ID: <strong>@Key</strong></span>
     <button class="btn btn-secondary" @onclick="CopyUrl">Click to copy URL</button>
+}
+<hr />
+@if (Key == null)
+{
+    <button class="btn btn-primary" @onclick="NewReadyCheck">Ready-Check</button>
+}
+else
+{
+    <input type="text" placeholder="Enter your name here" @bind="nameToAdd" />
+    <button class="btn btn-primary" @onclick="AddName">Add your name</button>
 
     <h4>Users Ready:</h4>
     <ul>
-        @foreach(var user in CurrentReadyCheck.UsersReady)
+        @foreach (var user in CurrentReadyCheck.UsersReady)
         {
             <li>@user</li>
         }
     </ul>
-}
-else
-{
-    <button class="btn btn-primary" @onclick="NewReadyCheck">Ready-Check</button>
+
 }
 
 @code {
@@ -33,21 +40,29 @@ else
 
     public void Dispose()
     {
-        if(this.CurrentReadyCheck == null)
+        if (this.CurrentReadyCheck == null)
         {
             this.CurrentReadyCheck.OnChange -= StateHasChanged;
         }
     }
-    protected override void OnParametersSet()
+    protected override async Task OnParametersSetAsync()
     {
         base.OnParametersSet();
         this.CurrentReadyCheck = ReadyCheckService.GetReadyCheck(this.Key);
-        if(CurrentReadyCheck != null)
+        if (CurrentReadyCheck == null)
         {
-            this.CurrentReadyCheck.OnChange += Foo;
+            if (!string.IsNullOrWhiteSpace(this.Key))
+            {
+                this.Key = null;
+                NavigationManager.NavigateTo("/", true);
+            }
+        }
+        else
+        {
+            this.CurrentReadyCheck.OnChange += StateHasChangedAsync;
         }
     }
-    private void Foo()
+    private void StateHasChangedAsync()
     {
         InvokeAsync(StateHasChanged);
     }
@@ -63,6 +78,6 @@ else
     }
     private void CopyUrl()
     {
-
+        ClipboardService.WriteTextAsync(NavigationManager.Uri);
     }
 }
