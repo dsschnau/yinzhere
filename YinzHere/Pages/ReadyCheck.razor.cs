@@ -15,32 +15,34 @@ namespace YinzHere.Pages
         [Inject] IJSRuntime JSRuntime { get; set; }
         [Inject] ClipboardService ClipboardService { get; set; }
 
-        protected string nameToAdd { get; set; }
-        protected Models.ReadyCheck CurrentReadyCheck { get; set; }
+        protected ElementReference addNameInput { get; set; }
+        
+        protected string _nameToAdd { get; set; }
+        protected Models.ReadyCheck _currentReadyCheck { get; set; }
 
         public void Dispose()
         {
-            if (this.CurrentReadyCheck == null)
+            if (_currentReadyCheck == null)
             {
-                this.CurrentReadyCheck.OnChange -= StateHasChanged;
+                _currentReadyCheck.OnChange -= StateHasChanged;
             }
         }
 
-        protected override async Task OnParametersSetAsync()
+        protected override void OnParametersSet()
         {
             base.OnParametersSet();
-            this.CurrentReadyCheck = ReadyCheckService.GetReadyCheck(this.Key);
-            if (CurrentReadyCheck == null)
+            _currentReadyCheck = ReadyCheckService.GetReadyCheck(Key);
+            if (_currentReadyCheck == null)
             {
-                if (!string.IsNullOrWhiteSpace(this.Key))
+                if (!string.IsNullOrWhiteSpace(Key))
                 {
-                    this.Key = null;
+                    Key = null;
                     NavigationManager.NavigateTo("/", true);
                 }
             }
             else
             {
-                this.CurrentReadyCheck.OnChange += StateHasChangedAsync;
+                _currentReadyCheck.OnChange += StateHasChangedAsync;
             }
         }
 
@@ -49,10 +51,15 @@ namespace YinzHere.Pages
             InvokeAsync(StateHasChanged);
         }
 
-        protected void AddName()
+        protected async Task AddNameAsync()
         {
-            this.CurrentReadyCheck.AddUser(nameToAdd);
-            this.nameToAdd = null;
+            if(string.IsNullOrWhiteSpace(_nameToAdd))
+            {
+                await addNameInput.FocusAsync();
+                return;
+            }
+            _currentReadyCheck.AddUser(_nameToAdd);
+            _nameToAdd = null;
         }
 
         protected void NewReadyCheck()

@@ -13,19 +13,21 @@
     <span>Room ID: <strong>@Key</strong></span>
     <button class="btn btn-secondary" @onclick="CopyUrl">Click to copy URL</button>
 }
+
 <hr />
+
 @if (Key == null)
 {
     <button class="btn btn-primary" @onclick="NewReadyCheck">Ready-Check</button>
 }
 else
 {
-    <input type="text" placeholder="Enter your name here" @bind="nameToAdd" />
-    <button class="btn btn-primary" @onclick="AddName">Add your name</button>
+    <input @ref="addNameInput" type="text" placeholder="Enter your name here" @bind="_nameToAdd" />
+    <button class="btn btn-primary" @onclick="AddNameAsync">Add your name</button>
 
     <h4>Users Ready:</h4>
     <ul>
-        @foreach (var user in CurrentReadyCheck.UsersReady)
+        @foreach (var user in _currentReadyCheck.UsersReady)
         {
             <li>@user</li>
         }
