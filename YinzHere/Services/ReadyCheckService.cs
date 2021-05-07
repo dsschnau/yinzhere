@@ -18,10 +18,7 @@ namespace YinzHere.Services
         public string NewReadyCheck()
         {
             var key = Guid.NewGuid().ToString();
-            var value = new ReadyCheck()
-            {
-                UsersReady = new List<string>()
-            };
+            var value = new ReadyCheck();
             _readyChecks.Add(key, value);
 
             return key;
